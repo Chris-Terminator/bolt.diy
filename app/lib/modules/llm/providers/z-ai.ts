@@ -45,8 +45,15 @@ export default class ZAIProvider extends BaseProvider {
     apiKeys?: Record<string, string>;
     providerSettings?: Record<string, IProviderSetting>;
   }): LanguageModelV1 {
-    const { apiKeys, model, serverEnv } = options;
-    const apiKey = apiKeys?.[this.config.apiTokenKey] || serverEnv[this.config.apiTokenKey] || '';
+    const { model, serverEnv, apiKeys, providerSettings } = options;
+
+    const { apiKey } = this.getProviderBaseUrlAndKey({
+      apiKeys,
+      providerSettings: providerSettings?.[this.name],
+      serverEnv: serverEnv as any,
+      defaultBaseUrlKey: '',
+      defaultApiTokenKey: this.config.apiTokenKey,
+    });
 
     if (!apiKey) {
       throw new Error(`Missing API key for ${this.name} provider`);
